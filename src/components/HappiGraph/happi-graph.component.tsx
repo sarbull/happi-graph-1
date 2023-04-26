@@ -32,6 +32,8 @@ interface Props {
   nodeDistanceY?: number;
   printMode?: boolean;
   onGraphRender?: any;
+
+  graphType: any;
 }
 
 interface State {
@@ -52,6 +54,7 @@ interface State {
   allGroup: any;
   isFullscreen: boolean;
   printMode: boolean;
+  graphType: string;
 }
 
 class HappiGraph extends React.Component<Props, State> {
@@ -70,15 +73,16 @@ class HappiGraph extends React.Component<Props, State> {
       isLoading: true,
       links: [...mappedLinks],
       nodeCountLimit: props.nodeCountLimit ? props.nodeCountLimit : 0,
-      nodeDistanceX: props.nodeDistanceX ? props.nodeDistanceX : 350,
-      nodeDistanceY: props.nodeDistanceY ? props.nodeDistanceY : 350,
+      nodeDistanceX: props.nodeDistanceX ? props.nodeDistanceX : 200,
+      nodeDistanceY: props.nodeDistanceY ? props.nodeDistanceY : 500,
       nodes: [...mappedNodes],
       selectedNodeId: props.selectedNodeId,
       svg: null,
       zoom: null,
       allGroup: null,
       isFullscreen: false,
-      printMode: props.printMode ? true : false
+      printMode: props.printMode ? true : false,
+      graphType: props.graphType
     };
   }
 
@@ -173,7 +177,7 @@ class HappiGraph extends React.Component<Props, State> {
     const { debug } = this.state;
 
     debug && console.log('init()');
-    const { svg, nodes, links, graphDirection } = this.state;
+    const { svg, nodes, links, graphDirection, graphType } = this.state;
 
     const allGroup =
       svg.append('g')
@@ -203,8 +207,23 @@ class HappiGraph extends React.Component<Props, State> {
         .call(zoom)
         .on('dblclick.zoom', null);
 
-      addNodes(nodes, nodesGroup, graphDirection, onNodeClick);
-      addLinks(links, linksGroup, graphDirection, nodes);
+
+    switch(graphType) {
+      case 'LINEAGE': {
+        addNodes(nodes, nodesGroup, graphDirection, onNodeClick);
+        addLinks(links, linksGroup, graphDirection, nodes);
+
+        break;
+      }
+      case 'TEX': {
+        // addNodes(nodes, nodesGroup, graphDirection, onNodeClick);
+        // addLinks(links, linksGroup, graphDirection, nodes);
+
+        break;
+      }
+      default:
+        console.log('GRAPH_TYPE_NOT_SELECTED');
+    }
 
       initCenterGraph(allGroup, svg, zoom, callback);
     });
